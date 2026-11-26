@@ -1,27 +1,35 @@
+import warnings
+
 import hydra
 import torch
+import torch.distributed as dist
 from lightning.pytorch import Trainer, seed_everything
 from lightning.pytorch.callbacks import (
     EarlyStopping,
     LearningRateMonitor,
     ModelCheckpoint,
+    ModelSummary,
 )
 from lightning.pytorch.loggers import CSVLogger
 from omegaconf import DictConfig, OmegaConf
+
+from lifecaster.utils import rprint
+
+warnings.filterwarnings("ignore", message=r".*torch\.cuda\.amp\.GradScaler.*")
 
 from lifecaster.datamodules.FinetuneDataModule import FinetuneDataModule
 from lifecaster.lightningmodules.FinetuneModule import FinetuneModule
 from lifecaster.loggers import RetryOrSkipTensorBoardLogger
 from lifecaster.paths import FPATH, get_local_drive, get_network_drive, get_wandb_runid
 
-OmegaConf.register_new_resolver("run_id", get_wandb_runid)
+OmegaConf.register_new_resolver("run_id", get_wandb_runid, use_cache=True)
 OmegaConf.register_new_resolver("network_drive", get_network_drive)
 OmegaConf.register_new_resolver("local_drive", get_local_drive)
 
 
 @hydra.main(config_path="../configs", config_name="finetune", version_base=None)
 def main(cfg: DictConfig) -> None:
-    print(f"Experiment: {cfg.experiment_name} / {cfg.run_id}")
+    rprint(f"Experiment: {cfg.experiment_name} / {cfg.run_id}")
     seed_everything(73)
     torch.set_float32_matmul_precision(cfg.hardware.float32_matmul_precision)
 
@@ -62,14 +70,14 @@ def main(cfg: DictConfig) -> None:
         prediction_windows=cfg.training.prediction_windows,
     )
     if cfg.paths.pretrained_model is not None:
-        print("INFO: Loading checkpoint", cfg.paths.pretrained_model)
+        rprint("INFO: Loading checkpoint", cfg.paths.pretrained_model)
         pretrain_path = FPATH.CHECKPOINTS / cfg.paths.pretrained_model
         ckpt = torch.load(pretrain_path, map_location="cpu", weights_only=True)
         missing, unexpected = lightning_module.load_state_dict(
             ckpt["state_dict"], strict=False
         )
-        print("INFO: Missing keys", missing)
-        print("INFO: Unexpected keys", unexpected)
+        rprint("INFO: Missing keys", missing)
+        rprint("INFO: Unexpected keys", unexpected)
 
     # Trainer setup
     logger = RetryOrSkipTensorBoardLogger(
@@ -91,16 +99,20 @@ def main(cfg: DictConfig) -> None:
     early_stop = EarlyStopping(
         monitor="val/AUROC_mean", mode="max", min_delta=1e-3, patience=2
     )
+    summary = ModelSummary(max_depth=2)
 
     trainer = Trainer(
         max_epochs=cfg.training.max_epochs,
-        callbacks=[lr_monitor, checkpoint_callback, early_stop],
+        callbacks=[lr_monitor, checkpoint_callback, early_stop, summary],
         logger=logger,
         deterministic=False,
         precision=cfg.hardware.precision,
         fast_dev_run=cfg.training.fast_dev_run,
+        use_distributed_sampler=False,
+        gradient_clip_val=1.0,
     )
 
+    trainer.logger.log_hyperparams(OmegaConf.to_container(cfg, resolve=True))
     # Train
     trainer.fit(
         lightning_module,
@@ -119,6 +131,9 @@ def main(cfg: DictConfig) -> None:
             version=cfg.run_id,
         )
         trainer.test(lightning_module, datamodule=data_module, ckpt_path="best")
+
+    if dist.is_initialized():
+        dist.destroy_process_group()
 
 
 if __name__ == "__main__":

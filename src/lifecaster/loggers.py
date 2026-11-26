@@ -3,14 +3,8 @@ import sys
 import time
 import traceback
 from pathlib import Path
-from typing import Any, Dict
 
 from lightning.pytorch.loggers import TensorBoardLogger
-
-try:
-    from loguru import logger
-except:
-    print("Could not load loguru")
 
 
 def configure_logger(log_file_path: Path) -> None:
@@ -22,6 +16,7 @@ def configure_logger(log_file_path: Path) -> None:
     Args:
         log_file_path (Path): The full path to the log file.
     """
+    from loguru import logger  # lazy: training imports this module without loguru
 
     # Remove the default handler.
     logger.remove()
@@ -64,11 +59,11 @@ def configure_logger(log_file_path: Path) -> None:
 class RetryOrSkipTensorBoardLogger(TensorBoardLogger):
     def __init__(
         self,
-        *args: Any,
+        *args,
         max_retries: int = 10,
         retry_delay: float = 5.0,
         max_skips: int = 5,
-        **kwargs: Any,
+        **kwargs,
     ):
         """
         A TensorBoard logger that retries on I/O errors and skips after repeated failures.
@@ -97,13 +92,13 @@ class RetryOrSkipTensorBoardLogger(TensorBoardLogger):
             pass
         self._experiment = None  # type: ignore
 
-    def log_metrics(self, metrics: Dict[str, float], step: int) -> None:
+    def log_metrics(self, metrics: dict[str, float], step: int) -> None:
         """
         Log scalar metrics with retry on OSError (or ValueError caused by OSError)
         and skip logic.
 
         Args:
-            metrics (Dict[str, float]): Metric names to values.
+            metrics (dict[str, float]): Metric names to values.
             step (int): Global step.
         """
         if self._skips >= self.max_skips:

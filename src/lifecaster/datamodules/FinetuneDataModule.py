@@ -1,6 +1,6 @@
 import math
 from pathlib import Path
-from typing import Dict, List, Literal
+from typing import Dict, List
 
 import polars as pl
 import pyarrow.dataset as ds
@@ -74,7 +74,7 @@ class FinetuneDataModule(BaseDataModule):
         sampler = WeightedRandomSampler(
             weights, num_samples=len(train_outcomes), replacement=True
         )
-        return self.get_dataloader(self.train_dataset, sampler=sampler)
+        return self.get_dataloader(self.train_dataset, sampler=sampler, shard=True)
 
     @staticmethod
     def _create_dataset(dataset: ds.Dataset, path: Path):

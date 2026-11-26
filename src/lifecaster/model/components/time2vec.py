@@ -25,6 +25,8 @@ class Time2Vec(torch.nn.Module):
         self.w = torch.nn.Parameter(torch.randn(input_dim, output_dim - 1))
         self.phi = torch.nn.Parameter(torch.randn(output_dim - 1))
 
+        self.w.register_hook(lambda g: g.contiguous())  # Removes a UserWarning
+
     def forward(self, tau: torch.Tensor) -> torch.Tensor:
         """Linear layers with bias (through nn.Parameter) followed clipping and a periodic function"""
         if self.init_scale is not None:

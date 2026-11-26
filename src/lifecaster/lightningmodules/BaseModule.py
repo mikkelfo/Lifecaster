@@ -56,7 +56,7 @@ class BaseModule(pl.LightningModule):
             lr=torch.tensor(self.hparams.learning_rate),
             betas=(self.hparams.beta1, self.hparams.beta2),
             weight_decay=self.hparams.weight_decay,
-            fused=True,
+            # fused=True, # Cannot be used with gradient clipping
         )
         return {
             "optimizer": optimizer,

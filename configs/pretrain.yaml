@@ -6,7 +6,8 @@ defaults:
   - _self_
 
 experiment_name: pretrain
-run_id: ${run_id:${experiment_name}}
+run_id: ${run_id:${experiment_name}}${run_id_suffix}
+run_id_suffix: ''
 
 paths: 
   ckpt_path:

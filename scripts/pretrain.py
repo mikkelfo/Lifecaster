@@ -1,12 +1,20 @@
+import warnings
+
 import hydra
 import torch
+import torch.distributed as dist
 from lightning.pytorch import Trainer, seed_everything
 from lightning.pytorch.callbacks import (
     EarlyStopping,
     LearningRateMonitor,
     ModelCheckpoint,
+    ModelSummary,
 )
 from omegaconf import DictConfig, OmegaConf
+
+from lifecaster.utils import rprint
+
+warnings.filterwarnings("ignore", message=r".*torch\.cuda\.amp\.GradScaler.*")
 
 from lifecaster.datamodules.PretrainDataModule import PretrainDataModule
 from lifecaster.lightningmodules.PretrainModule import PretrainModule
@@ -20,7 +28,7 @@ OmegaConf.register_new_resolver("local_drive", get_local_drive)
 
 @hydra.main(config_path="../configs", config_name="pretrain", version_base=None)
 def main(cfg: DictConfig) -> None:
-    print(f"Experiment: {cfg.experiment_name} / {cfg.run_id}")
+    rprint(f"Experiment: {cfg.experiment_name} / {cfg.run_id}")
     seed_everything(73)
     torch.set_float32_matmul_precision(cfg.hardware.float32_matmul_precision)
 
@@ -73,16 +81,20 @@ def main(cfg: DictConfig) -> None:
         save_last=True,
     )
     early_stop = EarlyStopping(monitor="val/loss", min_delta=1e-3, patience=2)
+    summary = ModelSummary(max_depth=2)
 
     trainer = Trainer(
         max_epochs=cfg.training.max_epochs,
-        callbacks=[lr_monitor, checkpoint_callback, early_stop],
+        callbacks=[lr_monitor, checkpoint_callback, early_stop, summary],
         logger=logger,
         deterministic=False,
         precision=cfg.hardware.precision,
         fast_dev_run=cfg.training.fast_dev_run,
+        use_distributed_sampler=False,
+        gradient_clip_val=1.0,
     )
 
+    trainer.logger.log_hyperparams(OmegaConf.to_container(cfg, resolve=True))
     # Train
     trainer.fit(
         lightning_module,
@@ -93,6 +105,9 @@ def main(cfg: DictConfig) -> None:
             else None
         ),
     )
+
+    if dist.is_initialized():
+        dist.destroy_process_group()
 
 
 if __name__ == "__main__":

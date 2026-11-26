@@ -1,5 +1,4 @@
 from collections import Counter
-from typing import List, Union
 
 import polars as pl
 import pyarrow as pa
@@ -7,6 +6,9 @@ import pyarrow.compute as pc
 import pyarrow.dataset as ds
 import torch
 from lightning.pytorch.plugins.io import TorchCheckpointIO
+from lightning.pytorch.utilities import rank_zero_only
+
+rprint = rank_zero_only(print)  # print on rank 0 only
 
 
 class LegacyTorchCheckpointIO(TorchCheckpointIO):
@@ -17,8 +19,8 @@ class LegacyTorchCheckpointIO(TorchCheckpointIO):
         return torch.load(path, map_location=map_location, weights_only=False)
 
 
-def get_pnrs(sources: Union[ds.Dataset, List[ds.Dataset]]) -> pa.Array:
-    """Gets unique pnrs from Dataset or List of Dataset"""
+def get_pnrs(sources: ds.Dataset | list[ds.Dataset]) -> pa.Array:
+    """Gets unique pnrs from Dataset or list of Dataset"""
     if isinstance(sources, ds.Dataset):
         return pc.unique(sources.to_table(columns=["person_id"])["person_id"])
     if isinstance(sources, list):
@@ -30,7 +32,7 @@ def get_pnrs(sources: Union[ds.Dataset, List[ds.Dataset]]) -> pa.Array:
         )
     else:
         raise TypeError(
-            f"{type(sources)} is not supported, only ds.Dataset and List[ds.Dataset]"
+            f"{type(sources)} is not supported, only ds.Dataset and list[ds.Dataset]"
         )
 
 
@@ -48,7 +50,7 @@ def calculate_abspos(
     return (date_col - origin_point).dt.total_seconds() / 60 / 60  # hours
 
 
-def create_weights(outcomes: list[int], op=lambda x: x, pprint=True) -> List[float]:
+def create_weights(outcomes: list[int], op=lambda x: x, pprint=True) -> list[float]:
     """
     Creates weights for a outcome list to be used in a WeightedRandomSampler.
 
@@ -64,7 +66,7 @@ def create_weights(outcomes: list[int], op=lambda x: x, pprint=True) -> List[flo
     # Calculate weight for each class with optional operation
     weights = {key: 1 / op(count) for key, count in counter.items()}
     if not create_weights.done:
-        print("Sampling with weights: ", weights)
+        rprint("Sampling with weights: ", weights)
         create_weights.done = True
 
     # Assign weights to each element in the outcomes list
@@ -105,7 +107,7 @@ def auto_ntokens(
         new_size = value if value is not None else int(batch_size * factor)
 
         if desc:
-            print(f"Batch size {batch_size} {desc}, trying batch size {new_size}")
+            rprint(f"Batch size {batch_size} {desc}, trying batch size {new_size}")
         changed = new_size != batch_size
         lightning_setattr(model, batch_arg_name, new_size)
         return new_size, changed
@@ -134,5 +136,5 @@ def get_n_steps_per_epoch(datamodule):
     sampler = datamodule.get_sampler(datamodule.train_dataset)
     avg_batch_size = datamodule.n_tokens / (sum(sampler.lengths) / len(sampler.lengths))
     n_steps = int(len(datamodule.train_dataset) / avg_batch_size)
-    print(f"Info: Steps ~{int(n_steps)} per epoch")
+    rprint(f"Info: Steps ~{int(n_steps)} per epoch")
     return n_steps

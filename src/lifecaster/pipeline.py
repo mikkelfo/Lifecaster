@@ -3,14 +3,13 @@
 import json
 import shutil
 from pathlib import Path
-from typing import List
 
 import polars as pl
 import pyarrow.dataset as ds
 
 from lifecaster.features import create_tokenized_events
 from lifecaster.tokenize import create_vocab
-from lifecaster.utils import get_pnrs
+from lifecaster.utils import get_pnrs, rprint
 
 
 class DataPipeline:
@@ -37,7 +36,7 @@ class DataPipeline:
 
     def __call__(
         self,
-        sources: List[ds.Dataset],
+        sources: list[ds.Dataset],
         background: pl.DataFrame,
     ):
         """Does all data processing required to create features"""
@@ -66,7 +65,7 @@ class DataPipeline:
     def _load_if_exists(path: Path, backend=None, pprint=True):
         if path.exists():
             if pprint:
-                print("Loading", path.stem)
+                rprint("Loading", path.stem)
             if path.suffix == ".parquet":
                 if backend == "arrow":
                     return ds.dataset(path, format="parquet")
@@ -83,11 +82,11 @@ class DataPipeline:
                 raise ValueError("Only .parquet and .json files allowed")
         else:
             if pprint:
-                print("Creating", path.stem)
+                rprint("Creating", path.stem)
             return None
 
     def get_background_subset(
-        self, sources: List[ds.Dataset], background_df: pl.DataFrame
+        self, sources: list[ds.Dataset], background_df: pl.DataFrame
     ) -> pl.DataFrame:
         """Load or subset background with pnrs of sources"""
         background_subset_path = self.output_dir / "background_subset.parquet"
@@ -105,7 +104,7 @@ class DataPipeline:
             background_subset.write_parquet(background_subset_path)
         return background_subset
 
-    def get_vocab(self, sources: List[ds.Dataset]) -> dict:
+    def get_vocab(self, sources: list[ds.Dataset]) -> dict:
         """Load or create the vocabulary"""
         vocab_path = self.output_dir / "vocab.json"
 
@@ -117,7 +116,7 @@ class DataPipeline:
         return vocab
 
     def get_tokenized_event(
-        self, sources: List[ds.Dataset], vocab: dict, birthdates: pl.DataFrame
+        self, sources: list[ds.Dataset], vocab: dict, birthdates: pl.DataFrame
     ) -> ds.Dataset:
         """Load or create the tokenized event dataframe"""
         # Tokenize parquet is moved to network to conserve space on local IO

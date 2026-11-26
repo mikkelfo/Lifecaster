@@ -1,6 +1,5 @@
 """Lightning Data Module for all data-related code"""
 
-import random
 import shutil
 from pathlib import Path
 from typing import List, Literal
@@ -168,7 +167,7 @@ class BaseDataModule(L.LightningDataModule):
             self.background_length,
         )
 
-    def get_dataloader(self, dataset: LMDBDataset, sampler=None):
+    def get_dataloader(self, dataset: LMDBDataset, sampler=None, shard=False):
         """Returns a generic DataLoader with given attributes from self and kwargs"""
         if self.num_workers == 0:
             raise ValueError(
@@ -180,24 +179,22 @@ class BaseDataModule(L.LightningDataModule):
             num_workers=self.num_workers,
             persistent_workers=self.num_workers > 0,
             collate_fn=self.collate_fn(),
-            sampler=self.get_sampler(dataset, sampler),
+            sampler=self.get_sampler(dataset, sampler, shard),
             pin_memory=True,
             worker_init_fn=self.worker_init_fn,
         )
 
-    def get_sampler(self, dataset, sampler=None):
+    def get_sampler(self, dataset, sampler=None, shard=False):
         """Returns a UnpadSampler"""
         lengths = dataset.get_lengths()
         lengths = [lengths[pnr] for pnr in dataset.observations["person_id"]]
 
-        if sampler is None:
-            sampler = list(range(len(dataset)))
-            random.shuffle(sampler)
         return UnpadSampler(
             lengths,
             n_tokens=self.n_tokens,
             max_seqlen=self.max_seqlen,
             sampler=sampler,
+            shard=shard,
         )
 
     @staticmethod
@@ -210,12 +207,12 @@ class BaseDataModule(L.LightningDataModule):
     def train_dataloader(self):
         """Returns the train dataloader for self.train_dataset"""
         assert self.train_dataset is not None
-        return self.get_dataloader(self.train_dataset)
+        return self.get_dataloader(self.train_dataset, shard=True)
 
     def val_dataloader(self):
         """Returns the val dataloader for self.val_dataset"""
         assert self.val_dataset is not None
-        return self.get_dataloader(self.val_dataset)
+        return self.get_dataloader(self.val_dataset, shard=True)
 
     def predict_dataloader(self):
         """Returns the prediction dataloader for self.predict_dataset"""

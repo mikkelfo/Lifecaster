@@ -30,6 +30,7 @@ data = [
    "pandas",
    "oracledb",
    "sqlalchemy",
+   "loguru",
 ]
 dev = [
    "matplotlib",
