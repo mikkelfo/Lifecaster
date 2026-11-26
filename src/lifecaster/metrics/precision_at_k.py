@@ -1,4 +1,5 @@
 from typing import Literal
+
 import torch
 from torchmetrics import Metric
 

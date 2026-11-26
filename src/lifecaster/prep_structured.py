@@ -15,10 +15,11 @@ import json  # noqa: E402
 import time  # noqa: E402
 
 import polars as pl  # noqa: E402
+from loguru import logger  # noqa: E402
+
 from lifecaster.loggers import configure_logger  # noqa: E402
 from lifecaster.paths import FPATH, check_and_copy_file_or_dir  # noqa: E402
 from lifecaster.preprocessing import extract_specs, process_dataset  # noqa: E402
-from loguru import logger  # noqa: E402
 
 # %% [markdown]
 # # WHERE TO SAVE OUR FILES

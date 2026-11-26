@@ -7,6 +7,7 @@ from typing import List
 
 import polars as pl
 import pyarrow.dataset as ds
+
 from lifecaster.features import create_tokenized_events
 from lifecaster.tokenize import create_vocab
 from lifecaster.utils import get_pnrs

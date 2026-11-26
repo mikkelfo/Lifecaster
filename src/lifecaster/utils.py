@@ -1,9 +1,10 @@
-from typing import Union, List
 from collections import Counter
-import pyarrow as pa
-import pyarrow.dataset as ds
-import pyarrow.compute as pc
+from typing import List, Union
+
 import polars as pl
+import pyarrow as pa
+import pyarrow.compute as pc
+import pyarrow.dataset as ds
 import torch
 from lightning.pytorch.plugins.io import TorchCheckpointIO
 
@@ -85,9 +86,9 @@ def auto_ntokens(
     steps_per_trial=50,
 ):
     """Tunes the n_tokens of datamodule to fit in memory"""
-    from lightning.pytorch.utilities.parsing import lightning_getattr, lightning_setattr
     import lightning.pytorch.tuner.batch_size_scaling as bss
     from lightning.pytorch.tuner.tuning import Tuner
+    from lightning.pytorch.utilities.parsing import lightning_getattr, lightning_setattr
 
     # Monkey-patch for n_tokens > len(dataset)
     def patch_adjust_batch_size(

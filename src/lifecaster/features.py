@@ -8,9 +8,10 @@ import polars.selectors as cs
 import pyarrow as pa
 import pyarrow.dataset as ds
 import pyarrow.parquet as pq
+from tqdm import tqdm
+
 from lifecaster.tokenize import tokenize
 from lifecaster.utils import calculate_abspos
-from tqdm import tqdm
 
 
 def add_sep_tokens(sep_token: int = 2):

@@ -10,13 +10,14 @@ import polars as pl
 import pyarrow.dataset as ds
 import torch
 from flash_attn.bert_padding import unpad_input
+from torch.utils.data import DataLoader
+
 from lifecaster.collate_fn import Collate
 from lifecaster.dataset.dataset import LMDBDataset
 from lifecaster.paths import FPATH, check_and_copy_file_or_dir
 from lifecaster.pipeline import DataPipeline
 from lifecaster.sampler import UnpadSampler
 from lifecaster.utils import get_background_length
-from torch.utils.data import DataLoader
 
 
 class BaseDataModule(L.LightningDataModule):

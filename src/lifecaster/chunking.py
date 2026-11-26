@@ -8,8 +8,9 @@ import pyarrow as pa
 import pyarrow.compute as pc
 import pyarrow.dataset as ds
 import pyarrow.parquet as pq
-from lifecaster.utils import get_pnrs
 from tqdm import tqdm
+
+from lifecaster.utils import get_pnrs
 
 
 def yield_chunks(sources: Union[ds.Dataset, List[ds.Dataset]], chunk_size=20_000):

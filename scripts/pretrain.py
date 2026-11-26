@@ -1,9 +1,5 @@
 import hydra
 import torch
-from lifecaster.datamodules.PretrainDataModule import PretrainDataModule
-from lifecaster.lightningmodules.PretrainModule import PretrainModule
-from lifecaster.loggers import RetryOrSkipTensorBoardLogger
-from lifecaster.paths import FPATH, get_local_drive, get_network_drive, get_wandb_runid
 from lightning.pytorch import Trainer, seed_everything
 from lightning.pytorch.callbacks import (
     EarlyStopping,
@@ -11,6 +7,11 @@ from lightning.pytorch.callbacks import (
     ModelCheckpoint,
 )
 from omegaconf import DictConfig, OmegaConf
+
+from lifecaster.datamodules.PretrainDataModule import PretrainDataModule
+from lifecaster.lightningmodules.PretrainModule import PretrainModule
+from lifecaster.loggers import RetryOrSkipTensorBoardLogger
+from lifecaster.paths import FPATH, get_local_drive, get_network_drive, get_wandb_runid
 
 OmegaConf.register_new_resolver("run_id", get_wandb_runid, use_cache=True)
 OmegaConf.register_new_resolver("network_drive", get_network_drive)

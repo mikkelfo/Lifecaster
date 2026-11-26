@@ -10,10 +10,11 @@ import numpy as np
 import polars as pl
 import pyarrow.dataset as ds
 import zstandard as zstd
+from torch.utils.data import Dataset
+
 from lifecaster.chunking import yield_chunks
 from lifecaster.dataset.serializer import Serializer
 from lifecaster.paths import check_and_copy_file_or_dir
-from torch.utils.data import Dataset
 
 # Compression/decompression
 cctx = zstd.ZstdCompressor(level=9)

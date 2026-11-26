@@ -17,9 +17,9 @@ class FlashRotaryEmbedding(RotaryEmbedding):
         #     ), f"padded qkv must be (batch, seqlen, 3, nheads, headdim), got{tuple(qkv.shape)}"
         #     return super().forward(qkv, max_seqlen=max_seqlen)
 
-        assert (
-            qkv.dim() == 4
-        ), f"varlen qkv must be (total_tokens, 3, nheads, headdim), got{tuple(qkv.shape)}"
+        assert qkv.dim() == 4, (
+            f"varlen qkv must be (total_tokens, 3, nheads, headdim), got{tuple(qkv.shape)}"
+        )
 
         assert max_seqlen is not None, "varlen mode requires max_seqlen"
         self._update_cos_sin_cache(max_seqlen, device=qkv.device, dtype=qkv.dtype)

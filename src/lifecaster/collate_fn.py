@@ -3,6 +3,7 @@
 from typing import Dict, List, Literal, Tuple
 
 import torch
+
 from lifecaster.collate_utils import calc_age_from_abspos, find_censor_idx
 
 

@@ -4,11 +4,12 @@ from typing import Dict, List, Literal
 
 import polars as pl
 import pyarrow.dataset as ds
+from torch.utils.data import WeightedRandomSampler
+
 from lifecaster.collate_fn import PredictCensorCollate
 from lifecaster.datamodules.BaseDataModule import BaseDataModule
 from lifecaster.dataset.dataset import FinetuneLMDBDataset
 from lifecaster.utils import calculate_abspos, create_weights
-from torch.utils.data import WeightedRandomSampler
 
 ONE_YEAR_ABSPOS = 365.25 * 24
 

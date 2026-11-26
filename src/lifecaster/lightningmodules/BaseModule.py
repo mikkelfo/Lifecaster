@@ -3,8 +3,9 @@ from typing import Any, Dict
 
 import lightning.pytorch as pl
 import torch
-from lifecaster.model.model import Lifecaster
 from torch.optim.lr_scheduler import LinearLR
+
+from lifecaster.model.model import Lifecaster
 
 warnings.filterwarnings(
     "ignore", message="To copy construct from a tensor", category=UserWarning

@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+
 from lifecaster.model.components.time2vec import Time2Vec
 
 

@@ -6,9 +6,10 @@ import polars as pl
 import pyarrow.compute as pc
 import pyarrow.dataset as ds
 import pyarrow.parquet as pq
+from tqdm import tqdm
+
 from lifecaster.chunking import write_dataset_to_parquet_in_batches
 from lifecaster.paths import FPATH, check_and_copy_file_or_dir
-from tqdm import tqdm
 
 
 def unique_preserve_order(lst: List[Any]) -> List[Any]:

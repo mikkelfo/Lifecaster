@@ -45,3 +45,10 @@ flash-attn = [
 
 [tool.setuptools.packages.find]
 where = ["src", "src.*"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint.isort]
+known-first-party = ["lifecaster"]

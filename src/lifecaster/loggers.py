@@ -3,7 +3,8 @@ import sys
 import time
 import traceback
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
+
 from lightning.pytorch.loggers import TensorBoardLogger
 
 try:

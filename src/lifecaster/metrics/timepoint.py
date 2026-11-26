@@ -1,5 +1,6 @@
+from typing import Callable, Optional
+
 import torch
-from typing import Optional, Callable
 from torchmetrics import Metric
 from torchmetrics.utilities.data import dim_zero_cat
 

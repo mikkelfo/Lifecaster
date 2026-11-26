@@ -8,9 +8,10 @@ import pandas as pd
 import polars as pl
 import pyarrow as pa
 import pyarrow.parquet as pq
-from lifecaster.paths import FPATH
 from sqlalchemy import create_engine
 from tqdm import tqdm
+
+from lifecaster.paths import FPATH
 
 
 def execute_query_to_single_parquet_file(

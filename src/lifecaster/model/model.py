@@ -13,6 +13,7 @@ from typing import Any, Dict, Tuple
 import torch
 import torch.nn as nn
 from flash_attn.bert_padding import pad_input
+
 from lifecaster.model.components.embeddings import LifecasterEmbeddings
 from lifecaster.model.components.layer import FlashLayer
 

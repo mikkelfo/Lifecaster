@@ -1,14 +1,15 @@
 from typing import Any, Dict, Tuple
 
 import torch
-from lifecaster.lightningmodules.BaseModule import BaseModule
-from lifecaster.metrics.timepoint import TimepointMetric
-from lifecaster.model.model import FinetuneLifecaster
 from torchmetrics import MetricCollection
 from torchmetrics.functional.classification import (
     binary_auroc,
     binary_average_precision,
 )
+
+from lifecaster.lightningmodules.BaseModule import BaseModule
+from lifecaster.metrics.timepoint import TimepointMetric
+from lifecaster.model.model import FinetuneLifecaster
 
 
 class FinetuneModule(BaseModule):

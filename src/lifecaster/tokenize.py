@@ -1,13 +1,13 @@
 """File for creating the vocabulary and tokenizing the dataframes"""
 
-from typing import List
 from collections import Counter
+from typing import List
+
 import polars as pl
 import polars.selectors as cs
-
-import pyarrow.dataset as ds
-import pyarrow.compute as pc
 import pyarrow as pa
+import pyarrow.compute as pc
+import pyarrow.dataset as ds
 
 
 def create_vocab(sources: List[ds.Dataset], cutoff=0) -> dict:

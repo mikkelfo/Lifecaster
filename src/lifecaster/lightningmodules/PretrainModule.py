@@ -2,10 +2,11 @@ from typing import Any, Dict, Tuple
 
 import torch
 from flash_attn.losses.cross_entropy import CrossEntropyLoss as FACrossEntropyLoss
+from torchmetrics import MetricCollection
+
 from lifecaster.lightningmodules.BaseModule import BaseModule
 from lifecaster.metrics.precision_at_k import SharedPrecisionAtK
 from lifecaster.model.model import PretrainLifecaster
-from torchmetrics import MetricCollection
 
 
 class PretrainModule(BaseModule):

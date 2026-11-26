@@ -2,6 +2,7 @@
 
 import torch
 import torch.nn as nn
+
 from lifecaster.model.components.mha import MultiHeadAttention
 from lifecaster.model.components.mlp import MLP
 
