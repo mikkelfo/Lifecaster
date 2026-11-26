@@ -2,7 +2,7 @@
 
 Use `conda env create -f env.yml` to install a conda environment called `lifecaster`
 
-It installs Python 3.13 and runs pip install -e ., which pulls the dependencies from pyproject.toml (torch, lightning, polars, lmdb, ...) and puts the lifecaster package on the path. Flash-attention is left out on purpose; the tutorial uses the no-flash model.
+It installs Python 3.13 and runs pip install -e ., which pulls the dependencies from pyproject.toml (torch, lightning, polars, lmdb, ...) and puts the lifecaster package on the path. Flash-attention is left out on purpose.
 
 # Layout
 
@@ -25,4 +25,4 @@ The actual logic to run the Lifecaster. It's organized into
 - lightningmodules: Where all training logic is called from
 - metrics: Custom metrics that isn't supported by torchmetrics
 - model: The Lifecaster model code
-- misc: Files that doesn't fit neatly into single categories (might be changed going forward)
+- misc: Files that doesn't fit neatly into single categories
