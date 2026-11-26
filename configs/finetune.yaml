@@ -1,0 +1,39 @@
+defaults:
+  - hardware: gpu
+  - data: standard
+  - model: small
+  - training: standard
+  - _self_
+
+experiment_name: finetune 
+run_id: ${run_id:${experiment_name}}-${data.outcome_name}
+
+paths: 
+  pretrained_model: 
+  ckpt_path: # ${experiment_name}/${run_id}/last.ckpt
+  # Project specific
+  output_dir: lifecaster_dataset
+  source_dir: lifecaster_data
+  outcome_dir: outcomes
+
+data:
+  outcome_name: HEA_lifelines_Death
+  outcomes: ${paths.outcome_dir}/${data.outcome_name}
+
+model:
+  learning_rate: 0.00001
+
+training:
+  max_epochs: 50
+  n_tokens: 1_000_000
+  warmup_steps: 1000
+  max_seqlen: ${model.max_seqlen}
+  fast_dev_run: 
+
+  prediction_windows:
+    - 1000
+  pred_times:
+    - "-10y"
+    - "-5y"
+    - "-3y"
+    - "-1y"

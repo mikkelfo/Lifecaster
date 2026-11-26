@@ -1,0 +1,3 @@
+num_workers: 20
+precision: 16-mixed
+float32_matmul_precision: high

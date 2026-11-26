@@ -1,0 +1,26 @@
+defaults:
+  - hardware: gpu
+  - data: standard
+  - model: small
+  - training: standard
+  - _self_
+
+experiment_name: pretrain
+run_id: ${run_id:${experiment_name}}
+
+paths: 
+  ckpt_path:
+  # ckpt_path: ${experiment_name}/${run_id}/last.ckpt
+  # Project specific
+  output_dir: lifecaster_dataset
+  source_dir: lifecaster_data
+
+training:
+  max_epochs: 20
+  n_tokens: 180_000
+  warmup_steps: 1000
+  max_seqlen: ${model.max_seqlen}
+  fast_dev_run: 
+
+model:
+  learning_rate: 0.0003

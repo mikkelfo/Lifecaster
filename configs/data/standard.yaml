@@ -1,0 +1,50 @@
+pipeline:
+  sep_token: False
+  fill_nulls: False
+  subset_background: False
+  cutoff: 0
+background: background
+cohorts:
+  train: cohort/train
+  val: cohort/val
+  test: cohort/test
+sources:
+  # Demographics
+  - address_change
+  - bef_updates
+  - family_births_deaths
+  - marital_status
+  - migration
+  # Labour & income
+  - akm
+  - amrun
+  - ind
+  # Health
+  - lmdb
+  - lpr
+  - sygesik
+  # Education
+  - primary_school_grades
+  - high_school_grades
+  - higher_ed_grades
+  - enrollment
+  - graduation
+  - diploma_grades
+  - qualifications
+  - wellbeing
+  - national_tests
+  - absences
+  # Social conditions
+  - decisions
+  - charges
+  - conferred_charges
+  - minor_charges
+  - victims
+  - jail_parole_start
+  - jail_end
+  - parole_end
+  - out_of_home_placements
+  - drug_treatment_start
+  - drug_treatment_end
+  - preventative_measures_start
+  - preventative_measures_end

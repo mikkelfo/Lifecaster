@@ -1,0 +1,5 @@
+# Optimizer info (tied to model)
+beta1: ${model.beta1}
+beta2: ${model.beta2}
+weight_decay: ${model.weight_decay}
+learning_rate: ${model.learning_rate}
